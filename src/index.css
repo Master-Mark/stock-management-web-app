@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    
+    /* Primary: Deep Automotive Red */
+    --primary: 348 83% 47%;
+    --primary-foreground: 0 0% 98%;
+    
+    /* Secondary: Slate Neutral */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 348 83% 47%;
+    
+    --radius: 0.5rem;
+
+    /* Status Colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --error: 0 84.2% 60.2%;
+    --error-foreground: 0 0% 100%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+
+    /* Order Status Colors */
+    --status-pending: 38 92% 50%;
+    --status-quote: 271 91% 65%;
+    --status-ordered: 217 91% 60%;
+    --status-transit: 199 89% 48%;
+    --status-arrived: 160 84% 39%;
+    --status-ready: 142 71% 45%;
+    --status-completed: 142 76% 36%;
+    --status-cancelled: 0 84% 60%;
+
+    /* Payment Status Colors */
+    --payment-unpaid: 0 84% 60%;
+    --payment-partial: 38 92% 50%;
+    --payment-paid: 142 76% 36%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 348 83% 55%;
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 348 83% 55%;
+
+    --success: 142 71% 45%;
+    --warning: 38 92% 55%;
+    --error: 0 84.2% 65%;
+    --info: 217 91% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    overflow-x: clip;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-balance;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .admin-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Badge Utilities */
+  .badge-status-pending { @apply bg-[hsl(var(--status-pending)/0.15)] text-[hsl(var(--status-pending))] border-[hsl(var(--status-pending)/0.3)]; }
+  .badge-status-quote { @apply bg-[hsl(var(--status-quote)/0.15)] text-[hsl(var(--status-quote))] border-[hsl(var(--status-quote)/0.3)]; }
+  .badge-status-ordered { @apply bg-[hsl(var(--status-ordered)/0.15)] text-[hsl(var(--status-ordered))] border-[hsl(var(--status-ordered)/0.3)]; }
+  .badge-status-transit { @apply bg-[hsl(var(--status-transit)/0.15)] text-[hsl(var(--status-transit))] border-[hsl(var(--status-transit)/0.3)]; }
+  .badge-status-arrived { @apply bg-[hsl(var(--status-arrived)/0.15)] text-[hsl(var(--status-arrived))] border-[hsl(var(--status-arrived)/0.3)]; }
+  .badge-status-ready { @apply bg-[hsl(var(--status-ready)/0.15)] text-[hsl(var(--status-ready))] border-[hsl(var(--status-ready)/0.3)]; }
+  .badge-status-completed { @apply bg-[hsl(var(--status-completed)/0.15)] text-[hsl(var(--status-completed))] border-[hsl(var(--status-completed)/0.3)]; }
+  .badge-status-cancelled { @apply bg-[hsl(var(--status-cancelled)/0.15)] text-[hsl(var(--status-cancelled))] border-[hsl(var(--status-cancelled)/0.3)]; }
+
+  .badge-payment-unpaid { @apply bg-[hsl(var(--payment-unpaid)/0.15)] text-[hsl(var(--payment-unpaid))] border-[hsl(var(--payment-unpaid)/0.3)]; }
+  .badge-payment-partial { @apply bg-[hsl(var(--payment-partial)/0.15)] text-[hsl(var(--payment-partial))] border-[hsl(var(--payment-partial)/0.3)]; }
+  .badge-payment-paid { @apply bg-[hsl(var(--payment-paid)/0.15)] text-[hsl(var(--payment-paid))] border-[hsl(var(--payment-paid)/0.3)]; }
+}
