@@ -1,101 +1,90 @@
+import { useState, useEffect } from 'react';
 
-import { useState } from 'react';
+const API_URL = 'https://v8muscleparts.co.za/api/bridge.php';
 
-const initialClients = [
-  {
-    id: 'CLT-001',
-    type: 'Individual',
-    firstName: 'Kai',
-    lastName: 'Nakamura',
-    businessName: '',
-    contactPerson: '',
-    phone: '+1 (555) 234-5678',
-    alternatePhone: '',
-    email: 'kai.nakamura@email.com',
-    addressLine1: '123 Cherry Lane',
-    addressLine2: '',
-    suburb: 'Downtown',
-    city: 'Seattle',
-    province: 'WA',
-    postalCode: '98101',
-    notes: 'Prefers email communication.',
-    totalOrders: 23,
-    totalSpent: 8742.00
-  },
-  {
-    id: 'CLT-002',
-    type: 'Business',
-    firstName: '',
-    lastName: '',
-    businessName: 'Vasquez Auto Repair',
-    contactPerson: 'Elena Vasquez',
-    phone: '+1 (555) 345-6789',
-    alternatePhone: '+1 (555) 345-6790',
-    email: 'elena@vasquezauto.com',
-    addressLine1: '456 Mechanic Blvd',
-    addressLine2: 'Suite B',
-    suburb: 'Industrial Park',
-    city: 'Austin',
-    province: 'WA',
-    postalCode: '78701',
-    notes: 'Net 30 terms approved.',
-    totalOrders: 17,
-    totalSpent: 5234.00
-  }
-];
+export function useClients() {
+  const [clients, setClients] = useState([]);
 
-export const useClients = () => {
-  const [clients, setClients] = useState(initialClients);
-
-  // TODO: Replace with API call to /api/clients (GET)
-  const getClients = () => clients;
-
-  const addClient = (clientData) => {
-    // TODO: Replace with API call to /api/clients (POST)
-    const newClient = {
-      ...clientData,
-      id: `CLT-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-      totalOrders: 0,
-      totalSpent: 0
-    };
-    setClients(prev => [newClient, ...prev]);
-    return newClient;
+  const fetchClients = async () => {
+    try {
+      const res = await fetch(`${API_URL}?action=getClients`);
+      const data = await res.json();
+      if (data.status === 'success') setClients(data.clients);
+    } catch (error) {
+      console.error('Failed to fetch clients:', error);
+    }
   };
 
-  const updateClient = (id, clientData) => {
-    // TODO: Replace with API call to /api/clients/:id (PUT/PATCH)
-    setClients(prev => prev.map(c => c.id === id ? { ...c, ...clientData } : c));
+  const addClient = async (client) => {
+    try {
+      const res = await fetch(`${API_URL}?action=createClient`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(client),
+      });
+      const data = await res.json();
+      if (data.status === 'success') fetchClients();
+    } catch (error) {
+      console.error('Failed to create client:', error);
+    }
   };
 
-  const deleteClient = (id) => {
-    // TODO: Replace with API call to /api/clients/:id (DELETE)
-    setClients(prev => prev.filter(c => c.id !== id));
+  const updateClient = async (id, client) => {
+    try {
+      const res = await fetch(`${API_URL}?action=updateClient`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...client, id }),
+      });
+      const data = await res.json();
+      if (data.status === 'success') fetchClients();
+    } catch (error) {
+      console.error('Failed to update client:', error);
+    }
   };
 
+  const deleteClient = async (id) => {
+    try {
+      const res = await fetch(`${API_URL}?action=deleteClient`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (data.status === 'success') fetchClients();
+    } catch (error) {
+      console.error('Failed to delete client:', error);
+    }
+  };
+
+  // --- Add searchClients and filterByType ---
   const searchClients = (query) => {
     if (!query) return clients;
-    const q = query.toLowerCase();
-    return clients.filter(c => 
-      (c.firstName && c.firstName.toLowerCase().includes(q)) ||
-      (c.lastName && c.lastName.toLowerCase().includes(q)) ||
-      (c.businessName && c.businessName.toLowerCase().includes(q)) ||
-      (c.email && c.email.toLowerCase().includes(q)) ||
-      (c.phone && c.phone.includes(q))
+    return clients.filter(
+      (client) =>
+        client.firstName?.toLowerCase().includes(query.toLowerCase()) ||
+        client.lastName?.toLowerCase().includes(query.toLowerCase()) ||
+        client.businessName?.toLowerCase().includes(query.toLowerCase()) ||
+        client.email?.toLowerCase().includes(query.toLowerCase()) ||
+        client.phone?.toLowerCase().includes(query.toLowerCase()),
     );
   };
 
   const filterByType = (type, list = clients) => {
-    if (!type || type === 'All') return list;
-    return list.filter(c => c.type === type);
+    if (type === 'All') return list;
+    return list.filter((client) => client.type === type);
   };
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
 
   return {
     clients,
-    getClients,
     addClient,
     updateClient,
     deleteClient,
     searchClients,
-    filterByType
+    filterByType,
   };
-};
+}

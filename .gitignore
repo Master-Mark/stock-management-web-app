@@ -34,3 +34,7 @@ coverage/
 
 # TypeScript (if using TS)
 *.tsbuildinfo
+
+# private
+api/
+
