@@ -1,103 +1,93 @@
+import { useState, useEffect } from 'react';
 
-import { useState } from 'react';
-
-const initialSuppliers = [
-  {
-    id: 'SUP-001',
-    companyName: 'Holley Performance Products',
-    supplierCode: 'HOL',
-    contactPerson: 'Sarah Mitchell',
-    contactPersonPosition: 'Account Manager',
-    phone: '+1 (555) 111-2222',
-    alternatePhone: '',
-    email: 'orders@holley.com',
-    website: 'www.holley.com',
-    addressLine1: '1801 Russellville Rd',
-    addressLine2: '',
-    city: 'Bowling Green',
-    province: 'KY',
-    postalCode: '42101',
-    country: 'USA',
-    paymentTerms: 'Net 30',
-    leadTimeDays: 5,
-    preferredContactMethod: 'Email',
-    notes: 'Primary supplier for carburetors and fuel systems.',
-    isActive: true
-  },
-  {
-    id: 'SUP-002',
-    companyName: 'Edelbrock Corporation',
-    supplierCode: 'EDL',
-    contactPerson: 'James Chen',
-    contactPersonPosition: 'Sales Rep',
-    phone: '+1 (555) 222-3333',
-    alternatePhone: '',
-    email: 'sales@edelbrock.com',
-    website: 'www.edelbrock.com',
-    addressLine1: '2700 California St',
-    addressLine2: '',
-    city: 'Torrance',
-    province: 'CA',
-    postalCode: '90503',
-    country: 'USA',
-    paymentTerms: 'Net 15',
-    leadTimeDays: 7,
-    preferredContactMethod: 'Phone',
-    notes: 'Intake manifolds and cylinder heads.',
-    isActive: true
-  }
-];
+const API_URL = 'https://v8muscleparts.co.za/api/bridge.php';
 
 export const useSuppliers = () => {
-  const [suppliers, setSuppliers] = useState(initialSuppliers);
+  const [suppliers, setSuppliers] = useState([]);
 
-  // TODO: Replace with API call to /api/suppliers (GET)
-  const getSuppliers = () => suppliers;
-
-  const addSupplier = (supplierData) => {
-    // TODO: Replace with API call to /api/suppliers (POST)
-    const newSupplier = {
-      ...supplierData,
-      id: `SUP-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`
-    };
-    setSuppliers(prev => [newSupplier, ...prev]);
-    return newSupplier;
+  // 1. GET SUPPLIERS (Load from DB)
+  const fetchSuppliers = async () => {
+    try {
+      const response = await fetch(`${API_URL}?action=getSuppliers`);
+      const data = await response.json();
+      setSuppliers(data);
+    } catch (error) {
+      console.error('Error fetching suppliers:', error);
+    }
   };
 
-  const updateSupplier = (id, supplierData) => {
-    // TODO: Replace with API call to /api/suppliers/:id (PUT/PATCH)
-    setSuppliers(prev => prev.map(s => s.id === id ? { ...s, ...supplierData } : s));
+  useEffect(() => {
+    fetchSuppliers();
+  }, []);
+
+  // 2. ADD SUPPLIER
+  const addSupplier = async (supplierData) => {
+    try {
+      const response = await fetch(`${API_URL}?action=createSupplier`, {
+        method: 'POST',
+        body: JSON.stringify(supplierData),
+      });
+      const result = await response.json();
+      if (result.id) {
+        fetchSuppliers(); // Refresh the list
+        return { ...supplierData, id: result.id };
+      }
+    } catch (error) {
+      console.error('Error adding supplier:', error);
+    }
   };
 
-  const deleteSupplier = (id) => {
-    // TODO: Replace with API call to /api/suppliers/:id (DELETE)
-    setSuppliers(prev => prev.filter(s => s.id !== id));
+  // 3. UPDATE SUPPLIER
+  const updateSupplier = async (id, supplierData) => {
+    try {
+      await fetch(`${API_URL}?action=updateSupplier`, {
+        method: 'POST', // We use POST because bridge.php handles POST/GET
+        body: JSON.stringify({ ...supplierData, id }),
+      });
+      fetchSuppliers(); // Refresh list
+    } catch (error) {
+      console.error('Error updating supplier:', error);
+    }
   };
 
+  // 4. DELETE SUPPLIER
+  const deleteSupplier = async (id) => {
+    try {
+      await fetch(`${API_URL}?action=deleteSupplier`, {
+        method: 'POST',
+        body: JSON.stringify({ id }),
+      });
+      fetchSuppliers(); // Refresh list
+    } catch (error) {
+      console.error('Error deleting supplier:', error);
+    }
+  };
+
+  // Keep your search and filter logic as they are locally
   const searchSuppliers = (query) => {
     if (!query) return suppliers;
     const q = query.toLowerCase();
-    return suppliers.filter(s => 
-      s.companyName.toLowerCase().includes(q) ||
-      s.contactPerson.toLowerCase().includes(q) ||
-      s.email.toLowerCase().includes(q) ||
-      s.phone.includes(q)
+    return suppliers.filter(
+      (s) =>
+        s.companyName?.toLowerCase().includes(q) ||
+        s.contactPerson?.toLowerCase().includes(q) ||
+        s.email?.toLowerCase().includes(q),
     );
   };
 
   const filterByStatus = (status, list = suppliers) => {
     if (status === 'All') return list;
     const isActive = status === 'Active';
-    return list.filter(s => s.isActive === isActive);
+    return list.filter((s) => s.isActive === isActive);
   };
 
   return {
     suppliers,
-    getSuppliers,
     addSupplier,
     updateSupplier,
     deleteSupplier,
     searchSuppliers,
-    filterByStatus
+    filterByStatus,
+    refreshSuppliers: fetchSuppliers,
   };
 };
