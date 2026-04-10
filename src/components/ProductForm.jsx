@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import FormInput from '@/components/FormInput.jsx';
@@ -6,6 +5,8 @@ import FormSelect from '@/components/FormSelect.jsx';
 import FormTextarea from '@/components/FormTextarea.jsx';
 import FormCheckbox from '@/components/FormCheckbox.jsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useSuppliers } from '@/hooks/useSuppliers';
+import { label } from 'framer-motion/client';
 
 const CATEGORIES = [
   { value: 'Carburetors', label: 'Carburetors' },
@@ -14,7 +15,7 @@ const CATEGORIES = [
   { value: 'Rings', label: 'Rings' },
   { value: 'Gaskets', label: 'Gaskets' },
   { value: 'Fuel system', label: 'Fuel system' },
-  { value: 'Ignition', label: 'Ignition' }
+  { value: 'Ignition', label: 'Ignition' },
 ];
 
 const BRANDS = [
@@ -25,7 +26,7 @@ const BRANDS = [
   { value: 'ACDelco', label: 'ACDelco' },
   { value: 'Moroso', label: 'Moroso' },
   { value: 'Lokar', label: 'Lokar' },
-  { value: 'Speedway Motors', label: 'Speedway Motors' }
+  { value: 'Speedway Motors', label: 'Speedway Motors' },
 ];
 
 const ENGINE_TYPES = [
@@ -34,30 +35,21 @@ const ENGINE_TYPES = [
   { value: 'Ford 302', label: 'Ford 302' },
   { value: 'Ford 351W', label: 'Ford 351W' },
   { value: 'Mopar 318', label: 'Mopar 318' },
-  { value: 'Universal', label: 'Universal' }
-];
-
-const SUPPLIERS = [
-  { value: 'Summit Racing', label: 'Summit Racing' },
-  { value: 'Jegs', label: 'Jegs' },
-  { value: 'RockAuto', label: 'RockAuto' },
-  { value: 'Speedway Motors', label: 'Speedway Motors' },
-  { value: 'Holley Performance', label: 'Holley Performance' },
-  { value: 'Edelbrock Performance', label: 'Edelbrock Performance' }
+  { value: 'Universal', label: 'Universal' },
 ];
 
 const STATUSES = [
   { value: 'active', label: 'Active' },
   { value: 'out_of_stock', label: 'Out of Stock' },
   { value: 'discontinued', label: 'Discontinued' },
-  { value: 'special_order_only', label: 'Special Order Only' }
+  { value: 'special_order_only', label: 'Special Order Only' },
 ];
 
 const defaultFormState = {
   sku: '',
   title: '',
   shortDescription: '',
-  fullDescription: '',
+  description: '',
   category: '',
   brand: '',
   engineType: '',
@@ -71,42 +63,48 @@ const defaultFormState = {
   minStockLevel: 5,
   isSpecialOrder: false,
   status: 'active',
-  notes: ''
+  notes: '',
 };
 
 const ProductForm = ({ product, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState(defaultFormState);
   const [errors, setErrors] = useState({});
   const [isPriceManuallyEdited, setIsPriceManuallyEdited] = useState(false);
+  const { suppliers } = useSuppliers();
 
   useEffect(() => {
     if (product) {
       setFormData(product);
-      setIsPriceManuallyEdited(true); // Assume manual if editing, or could be smarter
+      setIsPriceManuallyEdited(true);
     }
   }, [product]);
 
   // Auto-calculate selling price
   useEffect(() => {
     if (isPriceManuallyEdited) return;
-    
+
     const cost = parseFloat(formData.supplierCost) || 0;
     const markup = parseFloat(formData.markupValue) || 0;
     let price = 0;
 
     if (formData.markupType === 'percentage') {
-      price = cost + (cost * (markup / 100));
+      price = cost + cost * (markup / 100);
     } else {
       price = cost + markup;
     }
 
-    setFormData(prev => ({ ...prev, sellingPrice: price.toFixed(2) }));
-  }, [formData.supplierCost, formData.markupType, formData.markupValue, isPriceManuallyEdited]);
+    setFormData((prev) => ({ ...prev, sellingPrice: price.toFixed(2) }));
+  }, [
+    formData.supplierCost,
+    formData.markupType,
+    formData.markupValue,
+    isPriceManuallyEdited,
+  ]);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: null }));
+      setErrors((prev) => ({ ...prev, [field]: null }));
     }
   };
 
@@ -121,9 +119,11 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
     if (!formData.title) newErrors.title = 'Title is required';
     if (!formData.category) newErrors.category = 'Category is required';
     if (!formData.brand) newErrors.brand = 'Brand is required';
-    if (formData.supplierCost < 0) newErrors.supplierCost = 'Cost cannot be negative';
-    if (formData.sellingPrice < 0) newErrors.sellingPrice = 'Price cannot be negative';
-    
+    if (formData.supplierCost < 0)
+      newErrors.supplierCost = 'Cost cannot be negative';
+    if (formData.sellingPrice < 0)
+      newErrors.sellingPrice = 'Price cannot be negative';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -137,114 +137,161 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
         markupValue: parseFloat(formData.markupValue),
         sellingPrice: parseFloat(formData.sellingPrice),
         quantity: parseInt(formData.quantity, 10),
-        minStockLevel: parseInt(formData.minStockLevel, 10)
+        minStockLevel: parseInt(formData.minStockLevel, 10),
       });
     }
   };
+
+  const supplierOptions = suppliers.map((sup) => ({
+    label: sup.companyName,
+    value: sup.id.toString(),
+  }));
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-full">
       <ScrollArea className="flex-1 pr-4 -mr-4">
         <div className="space-y-6 pb-6">
-          
           {/* Basic Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold border-b pb-2">Basic Information</h3>
+            <h3 className="text-lg font-semibold border-b pb-2">
+              Basic Information
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormInput 
-                id="sku" label="SKU" value={formData.sku} 
-                onChange={(e) => handleChange('sku', e.target.value)} 
-                error={errors.sku} placeholder="e.g. HOL-1234" 
+              <FormInput
+                id="sku"
+                label="SKU"
+                value={formData.sku}
+                onChange={(e) => handleChange('sku', e.target.value)}
+                error={errors.sku}
+                placeholder="e.g. HOL-1234"
               />
-              <FormInput 
-                id="title" label="Product Title" value={formData.title} 
-                onChange={(e) => handleChange('title', e.target.value)} 
-                error={errors.title} placeholder="e.g. Holley 750 CFM Carburetor" 
+              <FormInput
+                id="title"
+                label="Product Title"
+                value={formData.title}
+                onChange={(e) => handleChange('title', e.target.value)}
+                error={errors.title}
+                placeholder="e.g. Holley 750 CFM Carburetor"
               />
             </div>
-            <FormInput 
-              id="shortDescription" label="Short Description" value={formData.shortDescription} 
-              onChange={(e) => handleChange('shortDescription', e.target.value)} 
-            />
-            <FormTextarea 
-              id="fullDescription" label="Full Description" value={formData.fullDescription} 
-              onChange={(e) => handleChange('fullDescription', e.target.value)} 
+            <FormTextarea
+              id="description"
+              label="Description"
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
               maxLength={500}
             />
           </div>
 
           {/* Classification */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold border-b pb-2">Classification</h3>
+            <h3 className="text-lg font-semibold border-b pb-2">
+              Classification
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormSelect 
-                id="category" label="Category" value={formData.category} 
-                onValueChange={(v) => handleChange('category', v)} 
-                options={CATEGORIES} error={errors.category} 
+              <FormSelect
+                id="category"
+                label="Category"
+                value={formData.category}
+                onValueChange={(v) => handleChange('category', v)}
+                options={CATEGORIES}
+                error={errors.category}
               />
-              <FormSelect 
-                id="brand" label="Brand" value={formData.brand} 
-                onValueChange={(v) => handleChange('brand', v)} 
-                options={BRANDS} error={errors.brand} 
+              <FormSelect
+                id="brand"
+                label="Brand"
+                value={formData.brand}
+                onValueChange={(v) => handleChange('brand', v)}
+                options={BRANDS}
+                error={errors.brand}
               />
-              <FormSelect 
-                id="engineType" label="Engine Type" value={formData.engineType} 
-                onValueChange={(v) => handleChange('engineType', v)} 
-                options={ENGINE_TYPES} 
+              <FormSelect
+                id="engineType"
+                label="Engine Type"
+                value={formData.engineType}
+                onValueChange={(v) => handleChange('engineType', v)}
+                options={ENGINE_TYPES}
               />
-              <FormSelect 
-                id="status" label="Status" value={formData.status} 
-                onValueChange={(v) => handleChange('status', v)} 
-                options={STATUSES} 
+              <FormSelect
+                id="status"
+                label="Status"
+                value={formData.status}
+                onValueChange={(v) => handleChange('status', v)}
+                options={STATUSES}
               />
             </div>
           </div>
 
           {/* Pricing & Supplier */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold border-b pb-2">Pricing & Supplier</h3>
+            <h3 className="text-lg font-semibold border-b pb-2">
+              Pricing & Supplier
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormSelect 
-                id="supplier" label="Supplier" value={formData.supplier} 
-                onValueChange={(v) => handleChange('supplier', v)} 
-                options={SUPPLIERS} 
+              <FormSelect
+                id="supplierId"
+                label="Supplier"
+                value={formData.supplierId}
+                onValueChange={(v) => handleChange('supplierId', v)}
+                options={supplierOptions}
               />
-              <FormInput 
-                id="supplierPartNumber" label="Supplier Part Number" value={formData.supplierPartNumber} 
-                onChange={(e) => handleChange('supplierPartNumber', e.target.value)} 
+              <FormInput
+                id="supplierPartNumber"
+                label="Supplier Part Number"
+                value={formData.supplierPartNumber}
+                onChange={(e) =>
+                  handleChange('supplierPartNumber', e.target.value)
+                }
               />
-              <FormInput 
-                id="supplierCost" label="Supplier Cost ($)" type="number" step="0.01" min="0" 
-                value={formData.supplierCost} 
+              <FormInput
+                id="supplierCost"
+                label="Supplier Cost ($)"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.supplierCost}
                 onChange={(e) => {
                   setIsPriceManuallyEdited(false);
                   handleChange('supplierCost', e.target.value);
-                }} 
-                error={errors.supplierCost} 
+                }}
+                error={errors.supplierCost}
               />
               <div className="grid grid-cols-2 gap-2">
-                <FormSelect 
-                  id="markupType" label="Markup Type" value={formData.markupType} 
+                <FormSelect
+                  id="markupType"
+                  label="Markup Type"
+                  value={formData.markupType}
                   onValueChange={(v) => {
                     setIsPriceManuallyEdited(false);
                     handleChange('markupType', v);
-                  }} 
-                  options={[{value: 'percentage', label: '%'}, {value: 'fixed', label: '$'}]} 
+                  }}
+                  options={[
+                    { value: 'percentage', label: '%' },
+                    { value: 'fixed', label: '$' },
+                  ]}
                 />
-                <FormInput 
-                  id="markupValue" label="Markup Value" type="number" step="0.01" min="0" 
-                  value={formData.markupValue} 
+                <FormInput
+                  id="markupValue"
+                  label="Markup Value"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.markupValue}
                   onChange={(e) => {
                     setIsPriceManuallyEdited(false);
                     handleChange('markupValue', e.target.value);
-                  }} 
+                  }}
                 />
               </div>
-              <FormInput 
-                id="sellingPrice" label="Selling Price ($)" type="number" step="0.01" min="0" 
-                value={formData.sellingPrice} 
-                onChange={handlePriceChange} 
-                error={errors.sellingPrice} 
+              <FormInput
+                id="sellingPrice"
+                label="Selling Price ($)"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.sellingPrice}
+                onChange={handlePriceChange}
+                error={errors.sellingPrice}
                 className="md:col-span-2"
               />
             </div>
@@ -254,35 +301,47 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold border-b pb-2">Inventory</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormInput 
-                id="quantity" label="Quantity in Stock" type="number" min="0" 
-                value={formData.quantity} 
-                onChange={(e) => handleChange('quantity', e.target.value)} 
+              <FormInput
+                id="quantity"
+                label="Quantity in Stock"
+                type="number"
+                min="0"
+                value={formData.quantity}
+                onChange={(e) => handleChange('quantity', e.target.value)}
               />
-              <FormInput 
-                id="minStockLevel" label="Minimum Stock Level" type="number" min="0" 
-                value={formData.minStockLevel} 
-                onChange={(e) => handleChange('minStockLevel', e.target.value)} 
+              <FormInput
+                id="minStockLevel"
+                label="Minimum Stock Level"
+                type="number"
+                min="0"
+                value={formData.minStockLevel}
+                onChange={(e) => handleChange('minStockLevel', e.target.value)}
               />
             </div>
-            <FormCheckbox 
-              id="isSpecialOrder" label="Special Order Item" 
+            <FormCheckbox
+              id="isSpecialOrder"
+              label="Special Order Item"
               description="This item is not kept in stock and is ordered upon customer request."
-              checked={formData.isSpecialOrder} 
-              onCheckedChange={(c) => handleChange('isSpecialOrder', c)} 
+              checked={formData.isSpecialOrder}
+              onCheckedChange={(c) => handleChange('isSpecialOrder', c)}
             />
-            <FormTextarea 
-              id="notes" label="Internal Notes" value={formData.notes} 
-              onChange={(e) => handleChange('notes', e.target.value)} 
+            <FormTextarea
+              id="notes"
+              label="Internal Notes"
+              value={formData.notes}
+              onChange={(e) => handleChange('notes', e.target.value)}
             />
           </div>
-
         </div>
       </ScrollArea>
-      
+
       <div className="pt-4 border-t mt-auto flex justify-end gap-3 bg-background">
-        <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button type="submit">{product ? 'Update Product' : 'Create Product'}</Button>
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit">
+          {product ? 'Update Product' : 'Create Product'}
+        </Button>
       </div>
     </form>
   );
