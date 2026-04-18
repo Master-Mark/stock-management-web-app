@@ -9,33 +9,140 @@ import { useSuppliers } from '@/hooks/useSuppliers';
 import { label } from 'framer-motion/client';
 
 const CATEGORIES = [
-  { value: 'Carburetors', label: 'Carburetors' },
-  { value: 'Bearings', label: 'Bearings' },
-  { value: 'Camshafts', label: 'Camshafts' },
-  { value: 'Rings', label: 'Rings' },
-  { value: 'Gaskets', label: 'Gaskets' },
-  { value: 'Fuel system', label: 'Fuel system' },
-  { value: 'Ignition', label: 'Ignition' },
+  // Engine core
+  { value: 'engine_blocks', label: 'Engine Blocks' },
+  { value: 'crankshafts', label: 'Crankshafts' },
+  { value: 'camshafts', label: 'Camshafts' },
+  { value: 'pistons_rings', label: 'Pistons & Rings' },
+  { value: 'bearings', label: 'Bearings' },
+  { value: 'valvetrain', label: 'Valvetrain' },
+
+  // Air & fuel
+  { value: 'carburetors', label: 'Carburetors' },
+  { value: 'fuel_system', label: 'Fuel System' },
+  { value: 'intake_manifolds', label: 'Intake Manifolds' },
+  { value: 'air_intake', label: 'Air Intake' },
+
+  // Ignition & electrical
+  { value: 'ignition', label: 'Ignition' },
+  { value: 'spark_plugs', label: 'Spark Plugs' },
+  { value: 'electrical', label: 'Electrical' },
+
+  // Exhaust & performance
+  { value: 'exhaust', label: 'Exhaust Systems' },
+  { value: 'headers', label: 'Headers' },
+
+  // Cooling & lubrication
+  { value: 'cooling_system', label: 'Cooling System' },
+  { value: 'radiators', label: 'Radiators' },
+  { value: 'oil_system', label: 'Oil System' },
+
+  // Gaskets & rebuild kits
+  { value: 'gaskets', label: 'Gaskets' },
+  { value: 'engine_kits', label: 'Engine Rebuild Kits' },
+
+  // Accessories & misc
+  { value: 'belts_pulleys', label: 'Belts & Pulleys' },
+  { value: 'filters', label: 'Filters' },
+  { value: 'engine_accessories', label: 'Engine Accessories' },
 ];
 
 const BRANDS = [
-  { value: 'Holley', label: 'Holley' },
-  { value: 'Edelbrock', label: 'Edelbrock' },
-  { value: 'ARP', label: 'ARP' },
-  { value: 'COMP Cams', label: 'COMP Cams' },
-  { value: 'ACDelco', label: 'ACDelco' },
-  { value: 'Moroso', label: 'Moroso' },
-  { value: 'Lokar', label: 'Lokar' },
-  { value: 'Speedway Motors', label: 'Speedway Motors' },
+  { value: 'holley', label: 'Holley' },
+  { value: 'edelbrock', label: 'Edelbrock' },
+  { value: 'arp', label: 'ARP' },
+  { value: 'comp_cams', label: 'COMP Cams' },
+  { value: 'acdelco', label: 'ACDelco' },
+  { value: 'moroso', label: 'Moroso' },
+  { value: 'lokar', label: 'Lokar' },
+  { value: 'speedway_motors', label: 'Speedway Motors' },
+
+  // 🔥 Must-have V8 / muscle brands
+  { value: 'msd', label: 'MSD' },
+  { value: 'brodix', label: 'Brodix' },
+  { value: 'trick_flow', label: 'Trick Flow' },
+  { value: 'afr', label: 'AFR (Air Flow Research)' },
+  { value: 'weiand', label: 'Weiand' },
+  { value: 'mallory', label: 'Mallory' },
+
+  // Engine internals
+  { value: 'scat', label: 'Scat' },
+  { value: 'eagle', label: 'Eagle' },
+  { value: 'probe', label: 'Probe Industries' },
+  { value: 'mahle', label: 'Mahle' },
+
+  // Gaskets / sealing
+  { value: 'fel_pro', label: 'Fel-Pro' },
+  { value: 'cometic', label: 'Cometic' },
+
+  // Oil & cooling
+  { value: 'melling', label: 'Melling' },
+  { value: 'griffin', label: 'Griffin Radiators' },
+
+  // Performance / racing
+  { value: 'jesel', label: 'Jesel' },
+  { value: 'crower', label: 'Crower' },
+
+  // Other
+  { value: 'Other', label: 'Other' },
 ];
 
 const ENGINE_TYPES = [
-  { value: 'Small Block Chevy', label: 'Small Block Chevy' },
-  { value: 'Big Block Chevy', label: 'Big Block Chevy' },
-  { value: 'Ford 302', label: 'Ford 302' },
-  { value: 'Ford 351W', label: 'Ford 351W' },
-  { value: 'Mopar 318', label: 'Mopar 318' },
-  { value: 'Universal', label: 'Universal' },
+  // 🔵 Chevy - Small Block
+  { value: 'sbc_265', label: 'Small Block Chevy 265' },
+  { value: 'sbc_283', label: 'Small Block Chevy 283' },
+  { value: 'sbc_305', label: 'Small Block Chevy 305' },
+  { value: 'sbc_327', label: 'Small Block Chevy 327' },
+  { value: 'sbc_350', label: 'Small Block Chevy 350' },
+  { value: 'sbc_383', label: 'Small Block Chevy 383 Stroker' },
+  { value: 'small_block_chevy', label: 'Small Block Chevy (All)' },
+
+  // 🔵 Chevy - Big Block
+  { value: 'bbc_396', label: 'Big Block Chevy 396' },
+  { value: 'bbc_402', label: 'Big Block Chevy 402' },
+  { value: 'bbc_427', label: 'Big Block Chevy 427' },
+  { value: 'bbc_454', label: 'Big Block Chevy 454' },
+  { value: 'big_block_chevy', label: 'Big Block Chevy (All)' },
+
+  // 🔵 Chevy LS (VERY important)
+  { value: 'ls1', label: 'LS1' },
+  { value: 'ls2', label: 'LS2' },
+  { value: 'ls3', label: 'LS3' },
+  { value: 'ls6', label: 'LS6' },
+  { value: 'ls7', label: 'LS7' },
+  { value: 'ls9', label: 'LS9' },
+  { value: 'ls_engines', label: 'LS Engines (All)' },
+
+  // 🔴 Ford Windsor
+  { value: 'ford_260', label: 'Ford 260' },
+  { value: 'ford_289', label: 'Ford 289' },
+  { value: 'ford_302', label: 'Ford 302' },
+  { value: 'ford_351w', label: 'Ford 351 Windsor' },
+  { value: 'ford_351c', label: 'Ford 351 Cleveland' },
+  { value: 'ford_windsor_family', label: 'Ford Windsor (All)' },
+
+  // 🔴 Ford Big Block
+  { value: 'ford_390', label: 'Ford 390 FE' },
+  { value: 'ford_427', label: 'Ford 427 FE' },
+  { value: 'ford_428', label: 'Ford 428 Cobra Jet' },
+  { value: 'ford_big_block', label: 'Ford Big Block (All)' },
+
+  // 🟡 Mopar Small Block
+  { value: 'mopar_273', label: 'Mopar 273' },
+  { value: 'mopar_318', label: 'Mopar 318' },
+  { value: 'mopar_340', label: 'Mopar 340' },
+  { value: 'mopar_360', label: 'Mopar 360' },
+  { value: 'mopar_small_block', label: 'Mopar Small Block (All)' },
+
+  // 🟡 Mopar Big Block
+  { value: 'mopar_383', label: 'Mopar 383' },
+  { value: 'mopar_400', label: 'Mopar 400' },
+  { value: 'mopar_426_hemi', label: 'Mopar 426 HEMI' },
+  { value: 'mopar_440', label: 'Mopar 440' },
+  { value: 'mopar_big_block', label: 'Mopar Big Block (All)' },
+
+  // ⚙️ Generic / cross-compatible
+  { value: 'universal', label: 'Universal / Fits Multiple Engines' },
 ];
 
 const STATUSES = [
@@ -160,7 +267,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               <FormInput
                 id="sku"
                 label="SKU"
-                value={formData.sku}
+                value={formData.sku || ''}
                 onChange={(e) => handleChange('sku', e.target.value)}
                 error={errors.sku}
                 placeholder="e.g. HOL-1234"
@@ -168,7 +275,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               <FormInput
                 id="title"
                 label="Product Title"
-                value={formData.title}
+                value={formData.title || ''}
                 onChange={(e) => handleChange('title', e.target.value)}
                 error={errors.title}
                 placeholder="e.g. Holley 750 CFM Carburetor"
@@ -177,7 +284,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
             <FormTextarea
               id="description"
               label="Description"
-              value={formData.description}
+              value={formData.description || ''}
               onChange={(e) => handleChange('description', e.target.value)}
               maxLength={500}
             />
@@ -192,7 +299,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               <FormSelect
                 id="category"
                 label="Category"
-                value={formData.category}
+                value={formData.category || ''}
                 onValueChange={(v) => handleChange('category', v)}
                 options={CATEGORIES}
                 error={errors.category}
@@ -200,7 +307,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               <FormSelect
                 id="brand"
                 label="Brand"
-                value={formData.brand}
+                value={formData.brand || ''}
                 onValueChange={(v) => handleChange('brand', v)}
                 options={BRANDS}
                 error={errors.brand}
@@ -208,14 +315,14 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               <FormSelect
                 id="engineType"
                 label="Engine Type"
-                value={formData.engineType}
+                value={formData.engineType || ''}
                 onValueChange={(v) => handleChange('engineType', v)}
                 options={ENGINE_TYPES}
               />
               <FormSelect
                 id="status"
                 label="Status"
-                value={formData.status}
+                value={formData.status || ''}
                 onValueChange={(v) => handleChange('status', v)}
                 options={STATUSES}
               />
@@ -231,25 +338,25 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               <FormSelect
                 id="supplierId"
                 label="Supplier"
-                value={formData.supplierId}
+                value={formData.supplierId || ''}
                 onValueChange={(v) => handleChange('supplierId', v)}
                 options={supplierOptions}
               />
               <FormInput
                 id="supplierPartNumber"
                 label="Supplier Part Number"
-                value={formData.supplierPartNumber}
+                value={formData.supplierPartNumber || ''}
                 onChange={(e) =>
                   handleChange('supplierPartNumber', e.target.value)
                 }
               />
               <FormInput
                 id="supplierCost"
-                label="Supplier Cost ($)"
+                label="Supplier Cost (R)"
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.supplierCost}
+                value={formData.supplierCost || ''}
                 onChange={(e) => {
                   setIsPriceManuallyEdited(false);
                   handleChange('supplierCost', e.target.value);
@@ -260,14 +367,14 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                 <FormSelect
                   id="markupType"
                   label="Markup Type"
-                  value={formData.markupType}
+                  value={formData.markupType || ''}
                   onValueChange={(v) => {
                     setIsPriceManuallyEdited(false);
                     handleChange('markupType', v);
                   }}
                   options={[
                     { value: 'percentage', label: '%' },
-                    { value: 'fixed', label: '$' },
+                    { value: 'fixed', label: 'R' },
                   ]}
                 />
                 <FormInput
@@ -276,7 +383,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                   type="number"
                   step="0.01"
                   min="0"
-                  value={formData.markupValue}
+                  value={formData.markupValue || 30}
                   onChange={(e) => {
                     setIsPriceManuallyEdited(false);
                     handleChange('markupValue', e.target.value);
@@ -289,7 +396,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.sellingPrice}
+                value={formData.sellingPrice || ''}
                 onChange={handlePriceChange}
                 error={errors.sellingPrice}
                 className="md:col-span-2"
@@ -306,7 +413,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                 label="Quantity in Stock"
                 type="number"
                 min="0"
-                value={formData.quantity}
+                value={formData.quantity || ''}
                 onChange={(e) => handleChange('quantity', e.target.value)}
               />
               <FormInput
@@ -314,7 +421,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                 label="Minimum Stock Level"
                 type="number"
                 min="0"
-                value={formData.minStockLevel}
+                value={formData.minStockLevel || ''}
                 onChange={(e) => handleChange('minStockLevel', e.target.value)}
               />
             </div>
@@ -328,7 +435,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
             <FormTextarea
               id="notes"
               label="Internal Notes"
-              value={formData.notes}
+              value={formData.notes || ''}
               onChange={(e) => handleChange('notes', e.target.value)}
             />
           </div>
