@@ -100,10 +100,10 @@ const ProductTable = ({ products, onEdit, onDelete, onView }) => {
                 <TableCell className="text-right">
                   <div className="flex flex-col">
                     <span className="text-xs text-muted-foreground line-through">
-                      ${Number(product.supplierCost).toFixed(2)}
+                      R{Number(product.supplierCost).toFixed(2)}
                     </span>
                     <span className="font-medium">
-                      ${Number(product.sellingPrice).toFixed(2)}
+                      R{Number(product.sellingPrice).toFixed(2)}
                     </span>
                   </div>
                 </TableCell>

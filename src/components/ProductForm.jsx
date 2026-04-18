@@ -195,7 +195,9 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
     let price = 0;
 
     if (formData.markupType === 'percentage') {
-      price = cost + cost * (markup / 100);
+      // price = cost + cost * (markup / 100);
+      const divisor = 1 - markup / 100;
+      price = divisor > 0 ? cost / divisor : 0;
     } else {
       price = cost + markup;
     }
@@ -392,7 +394,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               </div>
               <FormInput
                 id="sellingPrice"
-                label="Selling Price ($)"
+                label="Selling Price (R)"
                 type="number"
                 step="0.01"
                 min="0"

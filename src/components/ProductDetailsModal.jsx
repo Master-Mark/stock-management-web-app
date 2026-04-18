@@ -111,15 +111,15 @@ const ProductDetailsModal = ({ isOpen, onClose, product, onEdit }) => {
                   />
                   <DetailRow
                     label="Supplier Cost"
-                    value={`$${Number(product.supplierCost || 0).toFixed(2)}`}
+                    value={`R${Number(product.supplierCost || 0).toFixed(2)}`}
                   />
                   <DetailRow
                     label="Markup"
-                    value={`${product.markupValue || 0}${product.markupType === 'percentage' ? '%' : '$'}`}
+                    value={`${product.markupValue || 0}${product.markupType === 'percentage' ? '%' : 'R'}`}
                   />
                   <DetailRow
                     label="Selling Price"
-                    value={`$${Number(product.sellingPrice || 0).toFixed(2)}`}
+                    value={`R${Number(product.sellingPrice || 0).toFixed(2)}`}
                   />
                 </div>
               </div>
