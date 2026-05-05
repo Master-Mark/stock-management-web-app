@@ -253,7 +253,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
 
   const supplierOptions = suppliers.map((sup) => ({
     label: sup.companyName,
-    value: sup.id.toString(),
+    value: sup.companyName.toString(),
   }));
 
   return (
@@ -338,10 +338,10 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormSelect
-                id="supplierId"
+                id="supplier"
                 label="Supplier"
-                value={formData.supplierId || ''}
-                onValueChange={(v) => handleChange('supplierId', v)}
+                value={formData.supplier || ''}
+                onValueChange={(v) => handleChange('supplier', v)}
                 options={supplierOptions}
               />
               <FormInput

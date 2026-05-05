@@ -1,12 +1,22 @@
-
 import React, { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { Search, Plus, Filter, ArrowUpDown } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout.jsx';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { toast } from 'sonner';
 
 import { useProducts } from '@/hooks/useProducts.js';
@@ -18,7 +28,7 @@ import ProductDetailsModal from '@/components/ProductDetailsModal.jsx';
 
 const ProductsPage = () => {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
-  
+
   // State
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -38,36 +48,46 @@ const ProductsPage = () => {
     // Search
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(p => 
-        p.title.toLowerCase().includes(q) || 
-        p.sku.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.sku.toLowerCase().includes(q) ||
+          p.brand.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q),
       );
     }
 
     // Filters
     if (categoryFilter !== 'all') {
-      result = result.filter(p => p.category === categoryFilter);
+      result = result.filter((p) => p.category === categoryFilter);
     }
     if (statusFilter !== 'all') {
       if (statusFilter === 'low_stock') {
-        result = result.filter(p => p.quantity <= p.minStockLevel && !p.isSpecialOrder);
+        result = result.filter(
+          (p) => p.quantity <= p.minStockLevel && !p.isSpecialOrder,
+        );
       } else {
-        result = result.filter(p => p.status === statusFilter);
+        result = result.filter((p) => p.status === statusFilter);
       }
     }
 
     // Sort
     result.sort((a, b) => {
       switch (sortBy) {
-        case 'title-asc': return a.title.localeCompare(b.title);
-        case 'title-desc': return b.title.localeCompare(a.title);
-        case 'price-asc': return a.sellingPrice - b.sellingPrice;
-        case 'price-desc': return b.sellingPrice - a.sellingPrice;
-        case 'qty-asc': return a.quantity - b.quantity;
-        case 'qty-desc': return b.quantity - a.quantity;
-        default: return 0;
+        case 'title-asc':
+          return (a.title || '').localeCompare(b.title || '');
+        case 'title-desc':
+          return (b.title || '').localeCompare(a.title || '');
+        case 'price-asc':
+          return a.sellingPrice - b.sellingPrice;
+        case 'price-desc':
+          return b.sellingPrice - a.sellingPrice;
+        case 'qty-asc':
+          return a.quantity - b.quantity;
+        case 'qty-desc':
+          return b.quantity - a.quantity;
+        default:
+          return 0;
       }
     });
 
@@ -117,16 +137,22 @@ const ProductsPage = () => {
     <>
       <Helmet>
         <title>Products - American V8 Muscle Parts Admin</title>
-        <meta name="description" content="Manage your V8 muscle car parts inventory" />
+        <meta
+          name="description"
+          content="Manage your V8 muscle car parts inventory"
+        />
       </Helmet>
 
       <DashboardLayout pageTitle="Products">
-        
         {/* Header & Actions */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">Inventory Management</h2>
-            <p className="text-muted-foreground">Manage your parts, pricing, and stock levels.</p>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              Inventory Management
+            </h2>
+            <p className="text-muted-foreground">
+              Manage your parts, pricing, and stock levels.
+            </p>
           </div>
           <Button onClick={handleOpenCreate} className="gap-2 w-full lg:w-auto">
             <Plus className="w-4 h-4" /> Add Product
@@ -144,7 +170,7 @@ const ProductsPage = () => {
               className="pl-9 bg-background"
             />
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-3">
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-full sm:w-[160px] bg-background">
@@ -170,7 +196,9 @@ const ProductsPage = () => {
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="low_stock">Low Stock</SelectItem>
                 <SelectItem value="out_of_stock">Out of Stock</SelectItem>
-                <SelectItem value="special_order_only">Special Order</SelectItem>
+                <SelectItem value="special_order_only">
+                  Special Order
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -193,8 +221,8 @@ const ProductsPage = () => {
 
         {/* Desktop Table View */}
         <div className="hidden md:block">
-          <ProductTable 
-            products={filteredAndSortedProducts} 
+          <ProductTable
+            products={filteredAndSortedProducts}
             onEdit={handleOpenEdit}
             onDelete={handleOpenDelete}
             onView={handleOpenDetails}
@@ -208,9 +236,9 @@ const ProductsPage = () => {
               No products found.
             </div>
           ) : (
-            filteredAndSortedProducts.map(product => (
-              <ProductCard 
-                key={product.id} 
+            filteredAndSortedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
                 product={product}
                 onEdit={handleOpenEdit}
                 onDelete={handleOpenDelete}
@@ -222,35 +250,38 @@ const ProductsPage = () => {
 
         {/* Form Slide-over */}
         <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col">
+          <SheetContent
+            side="right"
+            className="w-full sm:max-w-2xl p-0 flex flex-col">
             <SheetHeader className="px-6 py-4 border-b border-border">
-              <SheetTitle>{selectedProduct ? 'Edit Product' : 'Add New Product'}</SheetTitle>
+              <SheetTitle>
+                {selectedProduct ? 'Edit Product' : 'Add New Product'}
+              </SheetTitle>
             </SheetHeader>
             <div className="flex-1 overflow-hidden p-6">
-              <ProductForm 
-                product={selectedProduct} 
-                onSubmit={handleFormSubmit} 
-                onCancel={() => setIsFormOpen(false)} 
+              <ProductForm
+                product={selectedProduct}
+                onSubmit={handleFormSubmit}
+                onCancel={() => setIsFormOpen(false)}
               />
             </div>
           </SheetContent>
         </Sheet>
 
         {/* Modals */}
-        <DeleteConfirmationModal 
-          isOpen={isDeleteOpen} 
-          onClose={() => setIsDeleteOpen(false)} 
-          onConfirm={handleDeleteConfirm} 
-          product={selectedProduct} 
+        <DeleteConfirmationModal
+          isOpen={isDeleteOpen}
+          onClose={() => setIsDeleteOpen(false)}
+          onConfirm={handleDeleteConfirm}
+          product={selectedProduct}
         />
 
-        <ProductDetailsModal 
-          isOpen={isDetailsOpen} 
-          onClose={() => setIsDetailsOpen(false)} 
-          product={selectedProduct} 
+        <ProductDetailsModal
+          isOpen={isDetailsOpen}
+          onClose={() => setIsDetailsOpen(false)}
+          product={selectedProduct}
           onEdit={handleOpenEdit}
         />
-
       </DashboardLayout>
     </>
   );
