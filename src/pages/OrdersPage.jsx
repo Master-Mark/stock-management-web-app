@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { Search, Plus, Filter } from 'lucide-react';
@@ -7,9 +6,22 @@ import DashboardLayout from '@/components/DashboardLayout.jsx';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useOrders } from '@/hooks/useOrders.js';
 import OrderForm from '@/components/OrderForm.jsx';
@@ -43,7 +55,9 @@ const OrdersPage = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
             <h2 className="text-2xl font-bold text-foreground">Orders</h2>
-            <p className="text-muted-foreground">Manage customer orders and fulfillment.</p>
+            <p className="text-muted-foreground">
+              Manage customer orders and fulfillment.
+            </p>
           </div>
           <Button onClick={() => setIsFormOpen(true)} className="gap-2">
             <Plus className="w-4 h-4" /> Create Order
@@ -91,25 +105,49 @@ const OrdersPage = () => {
               </TableHeader>
               <TableBody>
                 {filteredOrders.map((order) => (
-                  <TableRow key={order.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${order.id}`)}>
+                  <TableRow
+                    key={order.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => navigate(`/orders/${order.id}`)}>
                     <TableCell className="font-medium">{order.id}</TableCell>
                     <TableCell>{order.clientName}</TableCell>
-                    <TableCell className="text-muted-foreground">{order.supplier}</TableCell>
-                    <TableCell>
-                      <Badge className={`badge-status-${order.status.replace('_', '-')}`}>{order.status.replace('_', ' ')}</Badge>
+                    <TableCell className="text-muted-foreground">
+                      {order.supplier}
                     </TableCell>
                     <TableCell>
-                      <Badge className={`badge-payment-${order.paymentStatus}`}>{order.paymentStatus}</Badge>
+                      <Badge
+                        className={`badge-status-${order.status.replace('_', '-')}`}>
+                        {order.status.replace('_', ' ')}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-right font-medium">${order.totalAmount.toFixed(2)}</TableCell>
+                    <TableCell>
+                      <Badge className={`badge-payment-${order.paymentStatus}`}>
+                        {order.paymentStatus}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      ${order.totalAmount.toFixed(2)}
+                    </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/orders/${order.id}`); }}>View</Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/orders/${order.id}`);
+                        }}>
+                        View
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
                 {filteredOrders.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No orders found.</TableCell>
+                    <TableCell
+                      colSpan={7}
+                      className="text-center py-8 text-muted-foreground">
+                      No orders found.
+                    </TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -117,7 +155,11 @@ const OrdersPage = () => {
           </CardContent>
         </Card>
 
-        <OrderForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} onSave={handleCreateOrder} />
+        <OrderForm
+          isOpen={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          onSave={handleCreateOrder}
+        />
       </DashboardLayout>
     </>
   );
