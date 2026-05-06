@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { useClients } from '@/hooks/useClients';
 import { useProducts } from '@/hooks/useProducts';
-import { useOrders } from '@/hooks/useOrders'; // Added this
+import { useOrders } from '@/hooks/useOrders';
 import { Plus, Trash2 } from 'lucide-react';
 
 const OrderForm = ({ isOpen, onClose }) => {
@@ -87,9 +87,26 @@ const OrderForm = ({ isOpen, onClose }) => {
   };
 
   const handleSubmit = async () => {
-    // 1. Prepare the payload to match your PHP expectations
+    // Find the selected client to get their extra details if needed
+    const selectedClient = clients.find(
+      (c) => c.businessName === formData.clientName,
+    );
+
     const orderData = {
       ...formData,
+      // Fix the 'id' error: generate a temporary ID or handle via Auto-Increment in DB
+      id: `ORD-${Date.now()}`,
+
+      // Add the missing keys that PHP is looking for
+      clientPhone: selectedClient?.phone || '',
+      clientEmail: selectedClient?.email || '',
+      orderType: 'Sales', // or whatever your default type is
+      sourceChannel: 'Admin Portal',
+      etaDate: '',
+      internalNotes: '',
+      clientNotes: '',
+
+      // Existing fields
       status: 'pending',
       paymentStatus: 'unpaid',
       totalAmount: totalAmount,
@@ -98,10 +115,8 @@ const OrderForm = ({ isOpen, onClose }) => {
       orderDate: new Date().toISOString().split('T')[0],
     };
 
-    // 2. Call the actual database hook
     const success = await addOrder(orderData);
 
-    // 3. Only reset and close if the database actually saved it
     if (success) {
       onClose();
       setStep(1);

@@ -37,7 +37,7 @@ export const useOrders = () => {
 
   const addOrder = async (orderData) => {
     try {
-      const response = await fetch(`${API_URL}?action=createOrder`, {
+      const response = await fetch(`${API_URL}?action=createOrders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
