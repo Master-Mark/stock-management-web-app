@@ -77,11 +77,10 @@ export const useOrders = () => {
   // NEW: Added deleteOrder to connect to your delete.php
   const deleteOrder = async (id) => {
     try {
-      const response = await fetch(`${API_URL}?action=deleteOrder&id=${id}`);
+      const response = await fetch(`${API_URL}?action=deleteOrders&id=${id}`);
       const result = await response.json();
       if (result.status === 'success') {
         await fetchOrders();
-        toast.success('Order deleted');
         return true;
       }
       throw new Error(result.message);

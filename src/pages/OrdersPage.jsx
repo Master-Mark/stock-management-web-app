@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { Search, Plus, Filter } from 'lucide-react';
+import { Search, Plus, Filter, Trash, View } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/DashboardLayout.jsx';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ import OrderForm from '@/components/OrderForm.jsx';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
-  const { orders, searchOrders, filterOrders, addOrder } = useOrders();
+  const { searchOrders, filterOrders, addOrder, deleteOrder } = useOrders();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -37,12 +37,20 @@ const OrdersPage = () => {
     let result = searchOrders(searchQuery);
     result = filterOrders({ status: statusFilter }, result);
     return result;
-  }, [orders, searchQuery, statusFilter, searchOrders, filterOrders]);
+  }, [searchQuery, statusFilter, searchOrders, filterOrders]);
 
   const handleCreateOrder = (data) => {
     const newOrder = addOrder(data);
     toast.success('Order created successfully');
     navigate(`/orders/${newOrder.id}`);
+  };
+
+  const handleDelete = async (id) => {
+    const success = await deleteOrder(id);
+
+    if (success) {
+      toast.success('Successfully deleted');
+    }
   };
 
   return (
@@ -96,7 +104,7 @@ const OrdersPage = () => {
                 <TableRow>
                   <TableHead>Order ID</TableHead>
                   <TableHead>Client</TableHead>
-                  <TableHead>Supplier</TableHead>
+                  {/* <TableHead>Supplier</TableHead> */}
                   <TableHead>Status</TableHead>
                   <TableHead>Payment</TableHead>
                   <TableHead className="text-right">Total</TableHead>
@@ -110,10 +118,13 @@ const OrdersPage = () => {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => navigate(`/orders/${order.id}`)}>
                     <TableCell className="font-medium">{order.id}</TableCell>
-                    <TableCell>{order.clientName}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {order.supplier}
+                    <TableCell>
+                      {order.clientName ||
+                        order.clientName + order.clientLastName}
                     </TableCell>
+                    {/* <TableCell className="text-muted-foreground">
+                      {order.supplier}
+                    </TableCell> */}
                     <TableCell>
                       <Badge
                         className={`badge-status-${order.status.replace('_', '-')}`}>
@@ -126,7 +137,7 @@ const OrdersPage = () => {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      ${order.totalAmount.toFixed(2)}
+                      R{order.totalAmount.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
@@ -136,7 +147,19 @@ const OrdersPage = () => {
                           e.stopPropagation();
                           navigate(`/orders/${order.id}`);
                         }}>
+                        <View className="w-4 h-4" />
                         View
+                      </Button>
+                      <Button
+                        className="bg-red-600 text-white"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(order.id);
+                        }}>
+                        <Trash className="w-4 h-4" />
+                        Delete
                       </Button>
                     </TableCell>
                   </TableRow>

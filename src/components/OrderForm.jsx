@@ -29,7 +29,7 @@ const OrderForm = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     clientName: '',
     supplier: '',
-    items: [],
+    items: [''],
   });
 
   const totalAmount = formData.items.reduce(
@@ -88,9 +88,9 @@ const OrderForm = ({ isOpen, onClose }) => {
 
   const handleSubmit = async () => {
     // Find the selected client to get their extra details if needed
-    const selectedClient = clients.find(
-      (c) => c.businessName === formData.clientName,
-    );
+    const selectedClient = clients.find((c) => {
+      c.businessName || c.firstName === formData.clientName + formData.cl;
+    });
 
     const orderData = {
       ...formData,
@@ -144,14 +144,17 @@ const OrderForm = ({ isOpen, onClose }) => {
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
                   {clients?.map((client) => (
-                    <SelectItem key={client.id} value={client.businessName}>
-                      {client.businessName}
+                    <SelectItem
+                      key={client.id}
+                      value={client.businessName || client.firstName}>
+                      {client.businessName ||
+                        client.firstName + client.lastName}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label>Supplier (Optional)</Label>
               <Input
                 placeholder="Enter supplier name..."
@@ -160,7 +163,7 @@ const OrderForm = ({ isOpen, onClose }) => {
                   setFormData({ ...formData, supplier: e.target.value })
                 }
               />
-            </div>
+            </div> */}
             <div className="flex justify-end border-t pt-4">
               <Button
                 onClick={() => setStep(2)}
@@ -188,7 +191,13 @@ const OrderForm = ({ isOpen, onClose }) => {
                       <SelectContent>
                         {products?.map((p) => (
                           <SelectItem key={p.id} value={String(p.id)}>
-                            {p.title} ({p.sku})
+                            <h3 className="font-bold text-[15px] m-0">
+                              {p.title}
+                            </h3>
+                            <br />
+                            <p className="font-light text-[13px] mt-1">
+                              {p.description}
+                            </p>
                           </SelectItem>
                         ))}
                       </SelectContent>
